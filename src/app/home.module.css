@@ -1,0 +1,241 @@
+/* ── Section scaffold ───────────────────────────── */
+.section {
+  max-width: 1536px;
+  margin: 0 auto;
+  padding-left: 24px;
+  padding-right: 24px;
+}
+
+@media (min-width: 1024px) {
+  .section { padding-left: 48px; padding-right: 48px; }
+}
+
+/* ── Section header row ─────────────────────────── */
+.sectionHead {
+  display: flex;
+  align-items: flex-end;
+  justify-content: space-between;
+  margin-bottom: 40px;
+}
+
+@media (min-width: 1024px) {
+  .sectionHead { margin-bottom: 56px; }
+}
+
+.sectionEyebrow {
+  font-family: var(--font-body);
+  font-size: 9px;
+  font-weight: 600;
+  letter-spacing: 0.22em;
+  text-transform: uppercase;
+  color: var(--color-rose-deep);
+  display: block;
+  margin-bottom: 8px;
+}
+
+.sectionTitle {
+  font-family: var(--font-display);
+  font-size: clamp(32px, 4vw, 56px);
+  font-weight: 300;
+  letter-spacing: -0.025em;
+  line-height: 1.0;
+  color: var(--color-ink);
+}
+
+.viewAll {
+  font-family: var(--font-body);
+  font-size: 10px;
+  font-weight: 500;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  color: var(--color-ink-soft);
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding-bottom: 1px;
+  border-bottom: 1px solid var(--color-line);
+  transition: color 150ms ease, border-color 150ms ease, gap 250ms cubic-bezier(0.16,1,0.3,1);
+  white-space: nowrap;
+  flex-shrink: 0;
+  margin-left: 24px;
+}
+
+.viewAll:hover {
+  color: var(--color-ink);
+  border-color: var(--color-ink);
+  gap: 10px;
+}
+
+/* ── Product grid ───────────────────────────────── */
+.editGrid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 24px;
+}
+
+@media (min-width: 1024px) {
+  .editGrid {
+    grid-template-columns: repeat(3, 1fr);
+    gap: 40px;
+  }
+}
+
+/* ── Lookbook full-bleed ────────────────────────── */
+.lookbookSection {
+  padding-top: 56px;
+  padding-bottom: 56px;
+}
+
+@media (min-width: 1024px) {
+  .lookbookSection { padding-top: 96px; padding-bottom: 96px; }
+}
+
+.lookbookInner {
+  position: relative;
+  overflow: hidden;
+  aspect-ratio: 21 / 9;
+  background-color: var(--color-ink);
+  min-height: 280px;
+}
+
+@media (max-width: 767px) {
+  .lookbookInner { aspect-ratio: 4 / 3; }
+}
+
+.lookbookScrim {
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(
+    to top,
+    rgba(28,26,24,0.72) 0%,
+    rgba(28,26,24,0.10) 50%,
+    transparent 100%
+  );
+  pointer-events: none;
+}
+
+.lookbookContent {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-end;
+  padding: 32px;
+}
+
+@media (min-width: 1024px) {
+  .lookbookContent { padding: 56px 64px; }
+}
+
+.lookbookCaption {
+  font-family: var(--font-display);
+  font-size: clamp(24px, 3.5vw, 48px);
+  font-weight: 300;
+  letter-spacing: -0.025em;
+  line-height: 1.05;
+  color: var(--color-ivory);
+  margin-bottom: 20px;
+  max-width: 18ch;
+}
+
+.lookbookLink {
+  font-family: var(--font-body);
+  font-size: 10px;
+  font-weight: 500;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  color: var(--color-blush);
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  transition: gap 250ms cubic-bezier(0.16,1,0.3,1), color 150ms ease;
+}
+
+.lookbookLink:hover {
+  color: var(--color-ivory);
+  gap: 14px;
+}
+
+/* ── Category grid ──────────────────────────────── */
+.categoryGrid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 12px;
+}
+
+@media (min-width: 1024px) {
+  .categoryGrid {
+    grid-template-columns: repeat(4, 1fr);
+    gap: 16px;
+  }
+}
+
+.categoryCard {
+  position: relative;
+  overflow: hidden;
+  aspect-ratio: 3 / 4;
+  background-color: var(--color-cream);
+  display: block;
+}
+
+.categoryScrim {
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(
+    to top,
+    rgba(28,26,24,0.6) 0%,
+    transparent 55%
+  );
+  transition: opacity 400ms ease;
+}
+
+.categoryCard:hover .categoryScrim {
+  opacity: 0.85;
+}
+
+/* Subtle zoom on hover */
+.categoryCard :global(img) {
+  transition: transform 600ms cubic-bezier(0.16,1,0.3,1) !important;
+}
+
+.categoryCard:hover :global(img) {
+  transform: scale(1.04);
+}
+
+.categoryLabel {
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  padding: 20px;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.categoryName {
+  font-family: var(--font-display);
+  font-size: clamp(18px, 2.2vw, 26px);
+  font-weight: 300;
+  letter-spacing: -0.01em;
+  color: var(--color-ivory);
+  line-height: 1;
+}
+
+.categoryArrow {
+  font-family: var(--font-body);
+  font-size: 10px;
+  font-weight: 500;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: rgba(250,247,242,0.55);
+  transition: color 200ms ease, transform 250ms cubic-bezier(0.16,1,0.3,1);
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+}
+
+.categoryCard:hover .categoryArrow {
+  color: var(--color-blush);
+  transform: translateX(4px);
+}

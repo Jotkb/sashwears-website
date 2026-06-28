@@ -1,42 +1,55 @@
+'use client'
+
 import Link from 'next/link'
+import { useState } from 'react'
+import s from './footer.module.css'
 
 const shopLinks = [
-  { href: '/shop?category=dresses', label: 'Dresses' },
-  { href: '/shop?category=tops', label: 'Tops' },
+  { href: '/shop?category=dresses',    label: 'Dresses' },
+  { href: '/shop?category=tops',       label: 'Tops' },
   { href: '/shop?category=two-pieces', label: 'Two Pieces' },
-  { href: '/shop?category=shoes', label: 'Shoes' },
-  { href: '/shop', label: 'All Products' },
+  { href: '/shop?category=shoes',      label: 'Shoes' },
+  { href: '/shop',                     label: 'All Products' },
 ]
 
 const helpLinks = [
   { href: '/contact', label: 'Contact Us' },
-  { href: '/cart', label: 'Shopping Bag' },
-  { href: '#size-guide', label: 'Size Guide' },
+  { href: '/cart',    label: 'Shopping Bag' },
 ]
 
 const aboutLinks = [
-  { href: '/about', label: 'Our Story' },
+  { href: '/about',    label: 'Our Story' },
   { href: '/lookbook', label: 'Lookbook' },
 ]
 
-export default function Footer({ whatsappNumber, instagramUrl, tiktokUrl }: {
+const paymentMethods = ['Visa', 'Mastercard', 'MTN MoMo', 'Telecel', 'AirtelTigo']
+
+interface Props {
   whatsappNumber?: string
   instagramUrl?: string
   tiktokUrl?: string
-}) {
+}
+
+export default function Footer({ whatsappNumber, instagramUrl, tiktokUrl }: Props) {
   return (
-    <footer style={{ backgroundColor: 'var(--color-ink)', color: 'var(--color-ivory)' }}>
-      <div className="max-w-[1536px] mx-auto px-6 lg:px-12 py-16 lg:py-20">
-        <div className="grid grid-cols-2 lg:grid-cols-4 gap-10 lg:gap-8 mb-16">
+    <footer className={s.footer}>
+      <div className={s.inner}>
+
+        {/* Top — wordmark + tagline */}
+        <div className={s.top}>
+          <span className={s.footerWordmark}>Sashwears</span>
+          <p className={s.tagline}>Designed in Accra. Worn everywhere.</p>
+        </div>
+
+        {/* Columns */}
+        <div className={s.columns}>
           {/* Shop */}
           <div>
-            <p className="text-label mb-6" style={{ color: 'var(--color-blush)' }}>Shop</p>
-            <ul className="flex flex-col gap-3">
-              {shopLinks.map((l) => (
+            <span className={s.colLabel}>Shop</span>
+            <ul className={s.linkList}>
+              {shopLinks.map(l => (
                 <li key={l.href}>
-                  <Link href={l.href} className="text-sm opacity-70 hover:opacity-100 transition-opacity">
-                    {l.label}
-                  </Link>
+                  <Link href={l.href} className={s.link}>{l.label}</Link>
                 </li>
               ))}
             </ul>
@@ -44,13 +57,11 @@ export default function Footer({ whatsappNumber, instagramUrl, tiktokUrl }: {
 
           {/* Help */}
           <div>
-            <p className="text-label mb-6" style={{ color: 'var(--color-blush)' }}>Help</p>
-            <ul className="flex flex-col gap-3">
-              {helpLinks.map((l) => (
+            <span className={s.colLabel}>Help</span>
+            <ul className={s.linkList}>
+              {helpLinks.map(l => (
                 <li key={l.href}>
-                  <Link href={l.href} className="text-sm opacity-70 hover:opacity-100 transition-opacity">
-                    {l.label}
-                  </Link>
+                  <Link href={l.href} className={s.link}>{l.label}</Link>
                 </li>
               ))}
               {whatsappNumber && (
@@ -59,7 +70,7 @@ export default function Footer({ whatsappNumber, instagramUrl, tiktokUrl }: {
                     href={`https://wa.me/${whatsappNumber}`}
                     target="_blank"
                     rel="noopener noreferrer"
-                    className="text-sm opacity-70 hover:opacity-100 transition-opacity"
+                    className={s.link}
                   >
                     WhatsApp Us
                   </a>
@@ -70,13 +81,11 @@ export default function Footer({ whatsappNumber, instagramUrl, tiktokUrl }: {
 
           {/* About */}
           <div>
-            <p className="text-label mb-6" style={{ color: 'var(--color-blush)' }}>About</p>
-            <ul className="flex flex-col gap-3">
-              {aboutLinks.map((l) => (
+            <span className={s.colLabel}>About</span>
+            <ul className={s.linkList}>
+              {aboutLinks.map(l => (
                 <li key={l.href}>
-                  <Link href={l.href} className="text-sm opacity-70 hover:opacity-100 transition-opacity">
-                    {l.label}
-                  </Link>
+                  <Link href={l.href} className={s.link}>{l.label}</Link>
                 </li>
               ))}
             </ul>
@@ -84,46 +93,38 @@ export default function Footer({ whatsappNumber, instagramUrl, tiktokUrl }: {
 
           {/* Follow + Newsletter */}
           <div>
-            <p className="text-label mb-6" style={{ color: 'var(--color-blush)' }}>Follow</p>
-            <ul className="flex flex-col gap-3 mb-8">
+            <span className={s.colLabel}>Follow</span>
+            <ul className={`${s.linkList} ${s.followList}`}>
               {instagramUrl && (
                 <li>
-                  <a href={instagramUrl} target="_blank" rel="noopener noreferrer" className="text-sm opacity-70 hover:opacity-100 transition-opacity">
-                    Instagram
+                  <a href={instagramUrl} target="_blank" rel="noopener noreferrer" className={s.link}>
+                    Instagram — @sashwears
                   </a>
                 </li>
               )}
               {tiktokUrl && (
                 <li>
-                  <a href={tiktokUrl} target="_blank" rel="noopener noreferrer" className="text-sm opacity-70 hover:opacity-100 transition-opacity">
+                  <a href={tiktokUrl} target="_blank" rel="noopener noreferrer" className={s.link}>
                     TikTok
                   </a>
                 </li>
               )}
             </ul>
 
-            {/* Newsletter */}
+            <span className={s.newsletterLabel}>Newsletter</span>
+            <p className={s.newsletterNote}>New arrivals and quiet dispatches.</p>
             <NewsletterForm />
           </div>
         </div>
 
-        {/* Bottom */}
-        <div
-          className="flex flex-col lg:flex-row items-start lg:items-center justify-between gap-4 pt-8"
-          style={{ borderTop: '1px solid rgba(229,222,210,0.2)' }}
-        >
-          <div className="flex flex-wrap items-center gap-3">
-            {['Visa', 'Mastercard', 'MTN MoMo', 'Telecel Cash', 'AirtelTigo'].map((m) => (
-              <span
-                key={m}
-                className="text-[10px] px-2 py-1 border border-opacity-20"
-                style={{ border: '1px solid rgba(229,222,210,0.3)', color: 'rgba(250,247,242,0.6)' }}
-              >
-                {m}
-              </span>
+        {/* Bottom bar */}
+        <div className={s.bottom}>
+          <div className={s.paymentBadges}>
+            {paymentMethods.map(m => (
+              <span key={m} className={s.paymentBadge}>{m}</span>
             ))}
           </div>
-          <p className="text-[11px]" style={{ color: 'rgba(250,247,242,0.5)' }}>
+          <p className={s.copyright}>
             © {new Date().getFullYear()} Sashwears. Made in Ghana 🇬🇭
           </p>
         </div>
@@ -133,32 +134,36 @@ export default function Footer({ whatsappNumber, instagramUrl, tiktokUrl }: {
 }
 
 function NewsletterForm() {
+  const [submitted, setSubmitted] = useState(false)
+
+  const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
+    e.preventDefault()
+    const email = new FormData(e.currentTarget).get('email') as string
+    await fetch('/api/subscribe', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ email }),
+    }).catch(() => null)
+    setSubmitted(true)
+  }
+
+  if (submitted) {
+    return (
+      <p className={s.submittedNote}>You&apos;re on the list.</p>
+    )
+  }
+
   return (
-    <form
-      action="/api/subscribe"
-      method="POST"
-      className="flex gap-0"
-      onSubmit={async (e) => {
-        e.preventDefault()
-        const form = e.currentTarget
-        const email = new FormData(form).get('email') as string
-        await fetch('/api/subscribe', { method: 'POST', body: JSON.stringify({ email }), headers: { 'Content-Type': 'application/json' } })
-        form.reset()
-      }}
-    >
+    <form className={s.newsletterForm} onSubmit={handleSubmit}>
       <input
         name="email"
         type="email"
         required
-        placeholder="Your email"
-        className="flex-1 px-3 py-2 text-sm bg-transparent border text-ivory placeholder:opacity-40 outline-none min-w-0"
-        style={{ borderColor: 'rgba(229,222,210,0.3)', color: 'var(--color-ivory)' }}
+        placeholder="your@email.com"
+        className={s.newsletterInput}
+        aria-label="Email address for newsletter"
       />
-      <button
-        type="submit"
-        className="px-4 py-2 text-label transition-opacity hover:opacity-80"
-        style={{ backgroundColor: 'var(--color-rose-deep)', color: 'var(--color-ivory)' }}
-      >
+      <button type="submit" className={s.newsletterBtn}>
         Join
       </button>
     </form>

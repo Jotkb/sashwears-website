@@ -4,6 +4,8 @@ import { useState } from 'react'
 import { useCartStore } from '@/store/cart'
 import type { Product } from '@/types'
 import SizeGuideModal from './SizeGuideModal'
+import { IconMinus, IconPlus, IconCheck, IconWhatsApp } from '@/components/ui/Icons'
+import s from './product.module.css'
 
 interface Props {
   product: Product
@@ -14,108 +16,129 @@ export default function AddToCartForm({ product, imageUrl }: Props) {
   const [selectedSize, setSelectedSize] = useState<string | undefined>(
     product.sizes?.length === 1 ? product.sizes[0] : undefined
   )
-  const [qty, setQty] = useState(1)
+  const [qty, setQty]                     = useState(1)
   const [sizeGuideOpen, setSizeGuideOpen] = useState(false)
-  const [added, setAdded] = useState(false)
-  const { addItem, openCart } = useCartStore()
+  const [added, setAdded]                 = useState(false)
+  const { addItem, openCart }             = useCartStore()
 
-  const requiresSize = product.sizes && product.sizes.length > 0
+  const requiresSize = !!(product.sizes && product.sizes.length > 0)
+  const outOfStock   = (product.stock ?? 1) <= 0
+  const canAdd       = !outOfStock && (!requiresSize || !!selectedSize)
 
-  const handleAddToCart = () => {
-    if (requiresSize && !selectedSize) return
-
+  const handleAdd = () => {
+    if (!canAdd) return
     addItem({
       productId: product._id,
-      title: product.title,
-      price: product.price,
-      size: selectedSize,
-      quantity: qty,
+      title:     product.title,
+      price:     product.price,
+      size:      selectedSize,
+      quantity:  qty,
       imageUrl,
-      slug: product.slug.current,
+      slug:      product.slug.current,
     })
     setAdded(true)
-    setTimeout(() => setAdded(false), 2000)
     openCart()
+    setTimeout(() => setAdded(false), 2500)
   }
 
-  const outOfStock = (product.stock ?? 1) <= 0
+  const waText = encodeURIComponent(
+    `Hi Sashwears, I'm interested in: ${product.title}${selectedSize ? ` (Size ${selectedSize})` : ''} — GH¢${product.price}`
+  )
 
   return (
     <>
       {/* Size selector */}
-      {product.sizes && product.sizes.length > 0 && (
-        <div className="mb-6">
-          <div className="flex items-center justify-between mb-3">
-            <span className="text-label" style={{ color: 'var(--color-ink-soft)' }}>Size</span>
+      {requiresSize && (
+        <div className={s.sizeSectionWrap}>
+          <div className={s.sizeHeader}>
+            <span className={s.sizeLabel}>Size</span>
             <button
+              type="button"
+              className={s.sizeGuideBtn}
               onClick={() => setSizeGuideOpen(true)}
-              className="text-label underline underline-offset-4 opacity-50 hover:opacity-100 transition-opacity"
-              style={{ fontSize: 10 }}
             >
               Size Guide
             </button>
           </div>
-          <div className="flex flex-wrap gap-2">
-            {product.sizes.map((size) => (
+
+          <div className={s.sizeGrid}>
+            {product.sizes!.map(size => (
               <button
                 key={size}
+                type="button"
+                className={s.sizeBtn}
+                data-active={selectedSize === size ? 'true' : 'false'}
                 onClick={() => setSelectedSize(size)}
-                className="w-12 h-12 text-sm transition-all"
-                style={{
-                  border: selectedSize === size ? '1px solid var(--color-ink)' : '1px solid var(--color-line)',
-                  backgroundColor: selectedSize === size ? 'var(--color-ink)' : 'transparent',
-                  color: selectedSize === size ? 'var(--color-ivory)' : 'var(--color-ink)',
-                }}
+                aria-pressed={selectedSize === size ? 'true' : 'false'}
+                aria-label={`Size ${size}`}
               >
                 {size}
               </button>
             ))}
           </div>
+
           {requiresSize && !selectedSize && (
-            <p className="text-xs mt-2" style={{ color: 'var(--color-rose-deep)' }}>Please select a size</p>
+            <p className={s.sizeError} role="alert">Please select a size to continue</p>
           )}
         </div>
       )}
 
       {/* Quantity */}
-      <div className="flex items-center gap-4 mb-6">
-        <span className="text-label" style={{ color: 'var(--color-ink-soft)' }}>Qty</span>
-        <div className="flex items-center gap-3" style={{ border: '1px solid var(--color-line)' }}>
+      <div className={s.qtyRow}>
+        <span className={s.qtyLabel}>Qty</span>
+        <div className={s.qtyStepper}>
           <button
-            onClick={() => setQty(Math.max(1, qty - 1))}
-            className="w-10 h-10 flex items-center justify-center text-lg transition-opacity hover:opacity-60"
-          >−</button>
-          <span className="w-8 text-center text-sm">{qty}</span>
+            type="button"
+            className={s.qtyBtn}
+            onClick={() => setQty(q => Math.max(1, q - 1))}
+            aria-label="Decrease quantity"
+            disabled={qty <= 1}
+          >
+            <IconMinus size={14} />
+          </button>
+          <span className={s.qtyVal} aria-live="polite" aria-label={`Quantity: ${qty}`}>
+            {qty}
+          </span>
           <button
-            onClick={() => setQty(qty + 1)}
-            className="w-10 h-10 flex items-center justify-center text-lg transition-opacity hover:opacity-60"
-          >+</button>
+            type="button"
+            className={s.qtyBtn}
+            onClick={() => setQty(q => q + 1)}
+            aria-label="Increase quantity"
+          >
+            <IconPlus size={14} />
+          </button>
         </div>
       </div>
 
-      {/* CTA */}
-      <div className="flex flex-col gap-3">
+      {/* CTAs */}
+      <div className={s.ctaStack}>
         <button
-          onClick={handleAddToCart}
-          disabled={outOfStock || (requiresSize ? !selectedSize : false)}
-          className="btn-primary w-full"
-          style={outOfStock ? { opacity: 0.4, cursor: 'not-allowed' } : {}}
+          type="button"
+          onClick={handleAdd}
+          disabled={outOfStock || (requiresSize && !selectedSize)}
+          className={`btn-primary ${s.addBtn}${added ? ` ${s.addedState}` : ''}${outOfStock ? ` ${s.addBtnDisabled}` : ''}`}
+          aria-live="polite"
         >
-          {outOfStock ? 'Out of Stock' : added ? 'Added to Bag' : 'Add to Bag'}
+          {outOfStock ? (
+            'Out of Stock'
+          ) : added ? (
+            <><IconCheck size={14} />Added to Bag</>
+          ) : (
+            'Add to Bag'
+          )}
         </button>
 
-        {/* WhatsApp CTA */}
         <a
-          href={`https://wa.me/?text=${encodeURIComponent(`Hi Sashwears, I'm interested in: ${product.title}${selectedSize ? ` (Size ${selectedSize})` : ''} — GH¢${product.price}`)}`}
+          href={`https://wa.me/?text=${waText}`}
           target="_blank"
           rel="noopener noreferrer"
-          className="btn-outline w-full text-center"
+          className={`btn-outline ${s.waBtn}`}
         >
+          <IconWhatsApp size={16} />
           Message on WhatsApp
         </a>
       </div>
 
-      {/* Size Guide Modal */}
       <SizeGuideModal isOpen={sizeGuideOpen} onClose={() => setSizeGuideOpen(false)} />
     </>
   )

@@ -1,0 +1,132 @@
+.section {
+  position: relative;
+  width: 100%;
+  height: 100svh;
+  min-height: 600px;
+  display: flex;
+  flex-direction: column;
+  background-color: var(--color-ink);
+  overflow: hidden;
+}
+
+.video {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  opacity: 0.75;
+}
+
+/* Fallback gradient when no video */
+.fallback {
+  position: absolute;
+  inset: 0;
+  background: radial-gradient(ellipse 80% 60% at 60% 40%, #3D2B26 0%, var(--color-ink) 70%);
+  opacity: 1;
+}
+
+/* Two-stop gradient: subtle top vignette + strong bottom scrim */
+.overlay {
+  position: absolute;
+  inset: 0;
+  background:
+    linear-gradient(180deg,
+      rgba(28,26,24,0.25) 0%,
+      transparent        30%,
+      transparent        55%,
+      rgba(28,26,24,0.55) 100%
+    );
+  pointer-events: none;
+}
+
+/* Content layer */
+.content {
+  position: relative;
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  padding: 0 32px 40px;
+}
+
+@media (min-width: 1024px) {
+  .content { padding: 0 64px 56px; }
+}
+
+/* Wordmark at top — sits above nav fade zone, visible on load */
+.eyebrow {
+  font-family: var(--font-body);
+  font-size: 10px;
+  font-weight: 500;
+  letter-spacing: 0.22em;
+  text-transform: uppercase;
+  color: rgba(250,247,242,0.5);
+  margin-top: 96px;
+}
+
+@media (min-width: 1024px) {
+  .eyebrow { margin-top: 104px; }
+}
+
+/* Push copy to bottom */
+.spacer { flex: 1; }
+
+.copy {
+  font-family: var(--font-display);
+  font-size: clamp(36px, 5.5vw, 72px);
+  font-weight: 300;
+  letter-spacing: -0.025em;
+  line-height: 1.0;
+  color: var(--color-ivory);
+  max-width: 14ch;
+}
+
+/* Bottom bar: copy left, discover right */
+.bottomBar {
+  position: relative;
+  display: flex;
+  align-items: flex-end;
+  justify-content: space-between;
+  padding: 0 32px 40px;
+}
+
+@media (min-width: 1024px) {
+  .bottomBar { padding: 0 64px 56px; }
+}
+
+.discoverLink {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  font-family: var(--font-body);
+  font-size: 10px;
+  font-weight: 500;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  color: rgba(250,247,242,0.7);
+  transition: color 200ms ease, gap 250ms cubic-bezier(0.16,1,0.3,1);
+  flex-shrink: 0;
+}
+
+.discoverLink:hover {
+  color: var(--color-ivory);
+  gap: 14px;
+}
+
+/* Scroll indicator */
+.scrollLine {
+  position: absolute;
+  bottom: 0;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 1px;
+  height: 48px;
+  background: linear-gradient(to bottom, rgba(250,247,242,0.6), transparent);
+  animation: scrollPulse 2.5s ease-in-out infinite;
+}
+
+@keyframes scrollPulse {
+  0%   { opacity: 0; transform: translateX(-50%) scaleY(0); transform-origin: top; }
+  40%  { opacity: 1; }
+  100% { opacity: 0; transform: translateX(-50%) scaleY(1); transform-origin: top; }
+}

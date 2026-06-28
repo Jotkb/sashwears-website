@@ -2,9 +2,10 @@
 
 import Image from 'next/image'
 import { useState } from 'react'
-import { motion, AnimatePresence } from 'framer-motion'
 import { urlFor } from '@/sanity/image'
 import type { SanityImage } from '@/types'
+import { IconClose } from '@/components/ui/Icons'
+import s from './product.module.css'
 
 interface Props {
   images: SanityImage[]
@@ -20,20 +21,18 @@ export default function ProductGallery({ images, title }: Props) {
   const activeUrl = urlFor(images[active]).width(1000).height(1250).url()
 
   return (
-    <div className="flex gap-4">
-      {/* Thumbnails (desktop) */}
+    <div className={s.galleryWrap}>
+      {/* Vertical thumbnails — desktop only */}
       {images.length > 1 && (
-        <div className="hidden lg:flex flex-col gap-2 w-16 flex-shrink-0">
+        <div className={s.thumbCol}>
           {images.map((img, i) => (
             <button
               key={i}
+              type="button"
+              className={s.thumb}
+              data-active={i === active ? 'true' : 'false'}
               onClick={() => setActive(i)}
-              className="relative overflow-hidden transition-opacity"
-              style={{
-                aspectRatio: '4/5',
-                opacity: active === i ? 1 : 0.5,
-                outline: active === i ? '1px solid var(--color-ink)' : 'none',
-              }}
+              aria-label={`View image ${i + 1}`}
             >
               <Image
                 src={urlFor(img).width(120).height(150).url()}
@@ -46,39 +45,35 @@ export default function ProductGallery({ images, title }: Props) {
         </div>
       )}
 
-      {/* Main Image */}
-      <div className="flex-1">
-        <AnimatePresence mode="wait">
-          <motion.div
-            key={active}
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            exit={{ opacity: 0 }}
-            transition={{ duration: 0.3 }}
-            className="relative overflow-hidden cursor-zoom-in"
-            style={{ aspectRatio: '4/5', backgroundColor: 'var(--color-cream)' }}
-            onClick={() => setZoomed(true)}
-          >
-            <Image
-              src={activeUrl}
-              alt={title}
-              fill
-              className="object-cover"
-              priority
-              sizes="(max-width: 1024px) 100vw, 50vw"
-            />
-          </motion.div>
-        </AnimatePresence>
+      {/* Main image */}
+      <div>
+        <button
+          type="button"
+          className={s.mainImageWrap}
+          onClick={() => setZoomed(true)}
+          aria-label="Zoom image"
+        >
+          <Image
+            src={activeUrl}
+            alt={title}
+            fill
+            className={s.mainImage}
+            priority
+            sizes="(max-width: 1024px) 100vw, 50vw"
+          />
+        </button>
 
-        {/* Mobile thumbnails */}
+        {/* Mobile dot navigation */}
         {images.length > 1 && (
-          <div className="flex gap-2 mt-3 lg:hidden">
+          <div className={s.swipeDots}>
             {images.map((_, i) => (
               <button
                 key={i}
+                type="button"
+                className={s.dot}
+                data-active={i === active ? 'true' : 'false'}
                 onClick={() => setActive(i)}
-                className="w-2 h-2 rounded-full transition-all"
-                style={{ backgroundColor: active === i ? 'var(--color-ink)' : 'var(--color-line)' }}
+                aria-label={`Go to image ${i + 1}`}
               />
             ))}
           </div>
@@ -88,19 +83,25 @@ export default function ProductGallery({ images, title }: Props) {
       {/* Zoom modal */}
       {zoomed && (
         <div
-          className="fixed inset-0 z-[80] flex items-center justify-center p-4"
-          style={{ backgroundColor: 'rgba(28,26,24,0.9)' }}
+          className={s.zoomBackdrop}
           onClick={() => setZoomed(false)}
         >
-          <div className="relative max-w-3xl w-full" style={{ aspectRatio: '4/5' }}>
-            <Image src={activeUrl} alt={title} fill className="object-contain" />
+          <div className={s.zoomInner} onClick={e => e.stopPropagation()}>
+            <Image
+              src={activeUrl}
+              alt={title}
+              fill
+              className="object-contain"
+              priority
+            />
           </div>
           <button
-            className="absolute top-4 right-4 text-label"
-            style={{ color: 'var(--color-ivory)' }}
+            type="button"
+            className={s.zoomClose}
             onClick={() => setZoomed(false)}
+            aria-label="Close zoom"
           >
-            Close
+            <IconClose size={20} />
           </button>
         </div>
       )}

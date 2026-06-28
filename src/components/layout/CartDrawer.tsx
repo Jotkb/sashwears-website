@@ -4,115 +4,121 @@ import { useCartStore } from '@/store/cart'
 import Link from 'next/link'
 import Image from 'next/image'
 import { useEffect } from 'react'
+import { IconClose, IconMinus, IconPlus, IconArrowRight } from '@/components/ui/Icons'
+import s from './cart.module.css'
 
 export default function CartDrawer() {
   const { isOpen, closeCart, items, removeItem, updateQuantity, getTotal } = useCartStore()
+  const total     = getTotal()
+  const itemCount = items.reduce((n, i) => n + i.quantity, 0)
 
   useEffect(() => {
-    if (isOpen) document.body.style.overflow = 'hidden'
-    else document.body.style.overflow = ''
+    document.body.style.overflow = isOpen ? 'hidden' : ''
     return () => { document.body.style.overflow = '' }
   }, [isOpen])
 
-  const total = getTotal()
+  const open = isOpen ? 'true' : 'false'
 
   return (
     <>
-      {/* Overlay */}
-      {isOpen && (
-        <div
-          className="fixed inset-0 z-[60]"
-          style={{ backgroundColor: 'rgba(28,26,24,0.4)' }}
-          onClick={closeCart}
-        />
-      )}
-
-      {/* Drawer */}
       <div
-        className="fixed top-0 right-0 bottom-0 z-[70] w-full max-w-md flex flex-col transition-transform duration-300"
-        style={{
-          backgroundColor: 'var(--color-ivory)',
-          transform: isOpen ? 'translateX(0)' : 'translateX(100%)',
-        }}
+        className={s.backdrop}
+        data-open={open}
+        onClick={closeCart}
+        aria-hidden="true"
+      />
+
+      <div
+        role="dialog"
+        aria-label="Shopping bag"
+        aria-modal="true"
+        className={s.panel}
+        data-open={open}
       >
-        {/* Header */}
-        <div
-          className="flex items-center justify-between px-6 py-5"
-          style={{ borderBottom: '1px solid var(--color-line)' }}
-        >
-          <span className="font-display text-xl">Your Bag</span>
+        {/* ── Header ── */}
+        <div className={s.header}>
+          <div className={s.headerLeft}>
+            <span className={s.title}>Your Bag</span>
+            {items.length > 0 && (
+              <span className={s.itemCount}>
+                {itemCount} item{itemCount !== 1 ? 's' : ''}
+              </span>
+            )}
+          </div>
           <button
+            type="button"
+            className={s.closeBtn}
             onClick={closeCart}
-            className="text-label opacity-60 hover:opacity-100 transition-opacity"
-            aria-label="Close cart"
+            aria-label="Close bag"
           >
-            Close
+            <IconClose size={18} />
           </button>
         </div>
 
-        {/* Items */}
-        <div className="flex-1 overflow-y-auto px-6 py-4">
+        {/* ── Body ── */}
+        <div className={s.body}>
           {items.length === 0 ? (
-            <div className="flex flex-col items-center justify-center h-full gap-4 text-center">
-              <p className="font-display text-2xl" style={{ color: 'var(--color-ink-soft)' }}>
-                Your bag is empty
-              </p>
-              <Link href="/shop" onClick={closeCart} className="text-label underline underline-offset-4">
-                Continue shopping
+            <div className={s.empty}>
+              <p className={s.emptyHeading}>Nothing here yet.</p>
+              <Link href="/shop" onClick={closeCart} className="btn-ghost">
+                Browse the collection
+                <IconArrowRight size={14} />
               </Link>
             </div>
           ) : (
-            <ul className="flex flex-col gap-6">
-              {items.map((item) => (
-                <li
-                  key={`${item.productId}_${item.size}`}
-                  className="flex gap-4"
-                  style={{ borderBottom: '1px solid var(--color-line)', paddingBottom: '24px' }}
-                >
-                  {/* Image */}
-                  <div className="relative w-20 h-24 flex-shrink-0" style={{ backgroundColor: 'var(--color-cream)' }}>
+            <ul>
+              {items.map(item => (
+                <li key={`${item.productId}_${item.size}`} className={s.item}>
+                  {/* Thumbnail */}
+                  <div className={s.thumb}>
                     {item.imageUrl && (
                       <Image src={item.imageUrl} alt={item.title} fill className="object-cover" />
                     )}
                   </div>
 
-                  {/* Details */}
-                  <div className="flex-1 flex flex-col justify-between">
+                  {/* Info */}
+                  <div className={s.itemInfo}>
                     <div>
-                      <p className="font-display text-base">{item.title}</p>
+                      <p className={s.itemName}>{item.title}</p>
                       {item.size && (
-                        <p className="text-label mt-0.5" style={{ color: 'var(--color-ink-soft)' }}>
-                          Size {item.size}
-                        </p>
+                        <p className={s.itemSize}>Size {item.size}</p>
                       )}
                     </div>
-                    <div className="flex items-center justify-between">
-                      {/* Qty controls */}
-                      <div className="flex items-center gap-3">
+
+                    <div className={s.itemBottom}>
+                      {/* Stepper */}
+                      <div className={s.stepper}>
                         <button
+                          type="button"
+                          className={s.stepperBtn}
                           onClick={() => updateQuantity(item.productId, item.size, item.quantity - 1)}
-                          className="w-6 h-6 flex items-center justify-center text-lg"
-                          style={{ border: '1px solid var(--color-line)' }}
+                          aria-label="Decrease quantity"
                         >
-                          −
+                          <IconMinus size={14} />
                         </button>
-                        <span className="text-sm w-4 text-center">{item.quantity}</span>
+                        <span className={s.stepperVal}>{item.quantity}</span>
                         <button
+                          type="button"
+                          className={s.stepperBtn}
                           onClick={() => updateQuantity(item.productId, item.size, item.quantity + 1)}
-                          className="w-6 h-6 flex items-center justify-center text-lg"
-                          style={{ border: '1px solid var(--color-line)' }}
+                          aria-label="Increase quantity"
                         >
-                          +
+                          <IconPlus size={14} />
                         </button>
                       </div>
-                      <div className="flex items-center gap-4">
-                        <span className="font-body text-sm">GH¢ {(item.price * item.quantity).toLocaleString()}</span>
+
+                      {/* Price + remove */}
+                      <div className={s.itemRight}>
+                        <span className={s.itemPrice}>
+                          GH¢ {(item.price * item.quantity).toLocaleString()}
+                        </span>
                         <button
+                          type="button"
+                          className={s.removeBtn}
                           onClick={() => removeItem(item.productId, item.size)}
-                          className="text-label opacity-40 hover:opacity-100 transition-opacity"
-                          aria-label="Remove item"
+                          aria-label={`Remove ${item.title}`}
                         >
-                          ×
+                          <IconClose size={14} />
                         </button>
                       </div>
                     </div>
@@ -123,19 +129,17 @@ export default function CartDrawer() {
           )}
         </div>
 
-        {/* Footer */}
+        {/* ── Footer ── */}
         {items.length > 0 && (
-          <div className="px-6 py-6" style={{ borderTop: '1px solid var(--color-line)' }}>
-            <div className="flex justify-between mb-6">
-              <span className="text-label" style={{ color: 'var(--color-ink-soft)' }}>Subtotal</span>
-              <span className="font-display text-lg">GH¢ {total.toLocaleString()}</span>
+          <div className={s.footer}>
+            <div className={s.subtotalRow}>
+              <span className={s.subtotalLabel}>Subtotal</span>
+              <span className={s.subtotalAmount}>GH¢ {total.toLocaleString()}</span>
             </div>
-            <Link
-              href="/cart"
-              onClick={closeCart}
-              className="btn-primary w-full text-center block"
-            >
-              View Bag & Checkout
+            <p className={s.shippingNote}>Shipping calculated at checkout.</p>
+            <Link href="/cart" onClick={closeCart} className={s.cta}>
+              <span>Proceed to Checkout</span>
+              <IconArrowRight size={15} />
             </Link>
           </div>
         )}
