@@ -5,7 +5,7 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
   const siteUrl = process.env.NEXT_PUBLIC_SITE_URL || 'https://sashwears.com'
 
   const products: { slug: { current: string }; _updatedAt: string }[] =
-    await client.fetch(`*[_type == "product"]{ slug, _updatedAt }`).catch(() => [])
+    await client.fetch(`*[_type == "product"]{ slug, _updatedAt }`).then((r: typeof products | null) => r ?? []).catch(() => [])
 
   const productUrls: MetadataRoute.Sitemap = products.map((p) => ({
     url: `${siteUrl}/shop/${p.slug.current}`,

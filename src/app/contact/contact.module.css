@@ -1,0 +1,263 @@
+/* ── Contact page ────────────────────────────────── */
+
+.page {
+  padding-top: calc(var(--bar-h) + var(--nav-h));
+}
+
+/* ── Page header ────────────────────────────────── */
+.pageHead {
+  padding: 56px 24px 48px;
+  border-bottom: 1px solid var(--color-line);
+}
+
+@media (min-width: 1024px) {
+  .pageHead { padding: 72px 80px 56px; }
+}
+
+.eyebrow {
+  font-family: var(--font-body);
+  font-size: var(--text-10);
+  font-weight: 600;
+  letter-spacing: 0.22em;
+  text-transform: uppercase;
+  color: var(--color-rose-deep);
+  display: block;
+  margin-bottom: 16px;
+}
+
+.title {
+  font-family: var(--font-display);
+  font-size: clamp(36px, 5vw, 72px);
+  font-weight: 300;
+  letter-spacing: -0.03em;
+  line-height: 1.0;
+  color: var(--color-ink);
+}
+
+/* ── Two-column layout ──────────────────────────── */
+.layout {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: var(--section-mobile) 24px;
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 56px;
+}
+
+@media (min-width: 1024px) {
+  .layout {
+    grid-template-columns: 1fr 1fr;
+    gap: 96px;
+    padding: var(--section-desktop) 80px;
+  }
+}
+
+/* ── Info column ────────────────────────────────── */
+.infoCol {
+  display: flex;
+  flex-direction: column;
+  gap: 40px;
+}
+
+.infoBlock {}
+
+.infoLabel {
+  font-family: var(--font-body);
+  font-size: var(--text-10);
+  font-weight: 600;
+  letter-spacing: 0.22em;
+  text-transform: uppercase;
+  color: var(--color-rose-deep);
+  display: block;
+  margin-bottom: 12px;
+}
+
+.infoValue {
+  font-family: var(--font-body);
+  font-size: var(--text-14);
+  color: var(--color-ink-soft);
+  line-height: 1.7;
+  white-space: pre-line;
+}
+
+.infoLink {
+  font-family: var(--font-body);
+  font-size: var(--text-14);
+  color: var(--color-ink-soft);
+  display: block;
+  line-height: 1.7;
+  transition: color 180ms ease;
+}
+
+.infoLink:hover { color: var(--color-ink); }
+
+.infoLinkSub {
+  font-family: var(--font-body);
+  font-size: var(--text-10);
+  font-weight: 600;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+  color: var(--color-ink-faint);
+  display: inline-block;
+  margin-top: 6px;
+  text-decoration: underline;
+  text-underline-offset: 3px;
+  text-decoration-color: var(--color-line);
+  transition: color 180ms ease, text-decoration-color 180ms ease;
+}
+
+.infoLinkSub:hover {
+  color: var(--color-ink);
+  text-decoration-color: var(--color-ink);
+}
+
+/* ── Form column ────────────────────────────────── */
+.formCol {}
+
+.formLabel {
+  font-family: var(--font-body);
+  font-size: var(--text-10);
+  font-weight: 600;
+  letter-spacing: 0.22em;
+  text-transform: uppercase;
+  color: var(--color-ink-soft);
+  display: block;
+  margin-bottom: 28px;
+}
+
+/* ── Form fields — floating label style ─────────── */
+.form {
+  display: flex;
+  flex-direction: column;
+  gap: 32px;
+}
+
+/* Floating label wrapper */
+.floatField {}
+
+.floatInner {
+  position: relative;
+  padding-top: 18px;
+}
+
+/* The actual input / textarea */
+.floatInput,
+.floatTextarea {
+  width: 100%;
+  padding: 10px 0 10px;
+  background: transparent;
+  border: none;
+  border-bottom: 1px solid var(--color-line);
+  outline: none;
+  font-family: var(--font-body);
+  font-size: var(--text-14);
+  color: var(--color-ink);
+  display: block;
+  transition: border-color 250ms ease;
+}
+
+.floatTextarea {
+  resize: none;
+  line-height: 1.7;
+  min-height: 120px;
+}
+
+/* Floating label — sits at input level, floats up on focus / filled */
+.floatLabel {
+  position: absolute;
+  left: 0;
+  top: 28px;
+  font-family: var(--font-body);
+  font-size: var(--text-14);
+  color: var(--color-ink-faint);
+  pointer-events: none;
+  transform-origin: left top;
+  transition:
+    transform 220ms cubic-bezier(0.16, 1, 0.3, 1),
+    color     220ms ease,
+    font-size 220ms cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+/* Float up when input is focused OR has a value (placeholder=" " trick) */
+.floatInput:focus     ~ .floatLabel,
+.floatInput:not(:placeholder-shown) ~ .floatLabel,
+.floatTextarea:focus  ~ .floatLabel,
+.floatTextarea:not(:placeholder-shown) ~ .floatLabel {
+  transform: translateY(-22px) scale(0.78);
+  color: var(--color-rose-deep);
+}
+
+/* Animated underline on focus */
+.floatLine {
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  width: 0;
+  height: 1px;
+  background: var(--color-ink);
+  transition: width 280ms cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.floatInput:focus  ~ .floatLine,
+.floatTextarea:focus ~ .floatLine {
+  width: 100%;
+}
+
+/* Legacy classes kept for compatibility */
+.field { position: relative; }
+.input,
+.textarea {
+  width: 100%;
+  padding: 14px 0;
+  background: transparent;
+  border: none;
+  border-bottom: 1px solid var(--color-line);
+  outline: none;
+  font-family: var(--font-body);
+  font-size: var(--text-14);
+  color: var(--color-ink);
+  transition: border-color 200ms ease;
+  display: block;
+}
+.input::placeholder, .textarea::placeholder { color: var(--color-ink-faint); }
+.input:focus, .textarea:focus { border-bottom-color: var(--color-ink); }
+.textarea { resize: none; line-height: 1.6; }
+
+.fieldError {
+  font-family: var(--font-body);
+  font-size: var(--text-11);
+  color: var(--color-rose-deep);
+  margin-top: 6px;
+  letter-spacing: 0.02em;
+}
+
+.submitError {
+  font-family: var(--font-body);
+  font-size: var(--text-12);
+  color: var(--color-rose-deep);
+  line-height: 1.5;
+}
+
+.submitBtn {
+  align-self: flex-start;
+}
+
+/* ── Success state ──────────────────────────────── */
+.success {
+  padding: 32px 0;
+}
+
+.successTitle {
+  font-family: var(--font-display);
+  font-size: 32px;
+  font-weight: 300;
+  letter-spacing: -0.02em;
+  color: var(--color-ink);
+  margin-bottom: 10px;
+}
+
+.successNote {
+  font-family: var(--font-body);
+  font-size: var(--text-14);
+  color: var(--color-ink-soft);
+}

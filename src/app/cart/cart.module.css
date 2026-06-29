@@ -1,0 +1,3 @@
+.page {
+  padding-top: calc(var(--bar-h) + var(--nav-h));
+}

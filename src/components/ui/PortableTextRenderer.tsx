@@ -1,5 +1,6 @@
 import { PortableText } from 'next-sanity'
 import type { PortableTextBlock } from '@portabletext/types'
+import s from './portable-text.module.css'
 
 export default function PortableTextRenderer({ value }: { value: PortableTextBlock[] }) {
   return (
@@ -7,7 +8,7 @@ export default function PortableTextRenderer({ value }: { value: PortableTextBlo
       value={value}
       components={{
         block: {
-          normal: ({ children }) => <p className="mb-3 last:mb-0">{children}</p>,
+          normal: ({ children }) => <p className={s.p}>{children}</p>,
         },
       }}
     />

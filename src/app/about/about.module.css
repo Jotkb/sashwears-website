@@ -1,0 +1,331 @@
+/* ── About page ──────────────────────────────────── */
+
+.page {
+  padding-top: calc(var(--bar-h) + var(--nav-h));
+  position: relative;
+  overflow-x: hidden;
+}
+
+/* Floating ambient orbs */
+.page::before,
+.page::after {
+  content: '';
+  position: absolute;
+  border-radius: 50%;
+  pointer-events: none;
+  z-index: 0;
+}
+
+.page::before {
+  width: 520px;
+  height: 520px;
+  top: 60vh;
+  left: -180px;
+  background: radial-gradient(circle, var(--color-blush) 0%, transparent 68%);
+  opacity: 0.10;
+  animation: orbFloat 18s ease-in-out infinite;
+}
+
+.page::after {
+  width: 380px;
+  height: 380px;
+  top: 140vh;
+  right: -120px;
+  background: radial-gradient(circle, var(--color-rose-deep) 0%, transparent 68%);
+  opacity: 0.08;
+  animation: orbFloat 22s ease-in-out infinite reverse;
+  animation-delay: 3s;
+}
+
+@keyframes orbFloat {
+  0%, 100% { transform: translate(0, 0); }
+  33%       { transform: translate(24px, -32px); }
+  66%       { transform: translate(-16px, 20px); }
+}
+
+/* Full-bleed hero — photo fills, text overlays bottom */
+.hero {
+  position: relative;
+  width: 100%;
+  aspect-ratio: 16 / 9;
+  min-height: 480px;
+  background-color: var(--color-ink);
+  overflow: hidden;
+}
+
+@media (max-width: 767px) {
+  .hero { aspect-ratio: 4 / 5; }
+}
+
+/* Parallax wrapper — motion.div that translates on scroll */
+.heroImageWrap {
+  position: absolute;
+  inset: -12% 0;
+  will-change: transform;
+}
+
+.heroImage {
+  object-fit: cover;
+  object-position: center 25%;
+  filter: saturate(0.82);
+  opacity: 0.72;
+  width: 100%;
+  height: 100%;
+}
+
+/* ── Stats row ──────────────────────────────────── */
+.statsRow {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  border-top: 1px solid var(--color-line);
+  border-bottom: 1px solid var(--color-line);
+}
+
+.statItem {
+  padding: 36px 24px;
+  text-align: center;
+  border-right: 1px solid var(--color-line);
+}
+
+.statItem:last-child { border-right: none; }
+
+@media (min-width: 1024px) {
+  .statItem { padding: 48px 56px; }
+}
+
+.statNumber {
+  font-family: var(--font-display);
+  font-size: clamp(36px, 5vw, 64px);
+  font-weight: 300;
+  letter-spacing: -0.04em;
+  color: var(--color-ink);
+  line-height: 1;
+  margin-bottom: 8px;
+}
+
+.statLabel {
+  font-family: var(--font-body);
+  font-size: var(--text-10);
+  font-weight: 500;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  color: var(--color-ink-faint);
+}
+
+/* ── Editorial image pair ───────────────────────── */
+.editorialPair {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 12px;
+  padding: 0 24px var(--section-mobile);
+  max-width: 900px;
+  margin: 0 auto;
+}
+
+@media (min-width: 1024px) {
+  .editorialPair {
+    padding: 0 56px var(--section-desktop);
+    gap: 20px;
+    align-items: end;
+  }
+}
+
+.editorialImg {
+  position: relative;
+  overflow: hidden;
+  aspect-ratio: 3 / 4;
+}
+
+.editorialImgOffset {
+  margin-top: -48px;
+}
+
+@media (max-width: 767px) {
+  .editorialImgOffset { margin-top: -24px; }
+}
+
+.editorialPhoto {
+  object-fit: cover;
+  object-position: center top;
+  transition: transform 700ms cubic-bezier(0.16,1,0.3,1);
+}
+
+.editorialImg:hover .editorialPhoto {
+  transform: scale(1.04);
+}
+
+.heroScrim {
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(
+    180deg,
+    rgba(24,22,15,0.18) 0%,
+    rgba(24,22,15,0.0)  35%,
+    rgba(24,22,15,0.55) 80%,
+    rgba(24,22,15,0.80) 100%
+  );
+  pointer-events: none;
+}
+
+.heroContent {
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  padding: 40px 24px;
+}
+
+@media (min-width: 1024px) {
+  .heroContent { padding: 64px 80px; }
+}
+
+.heroEyebrow {
+  font-family: var(--font-body);
+  font-size: var(--text-10);
+  font-weight: 500;
+  letter-spacing: 0.22em;
+  text-transform: uppercase;
+  color: rgba(249,246,241,0.50);
+  display: block;
+  margin-bottom: 14px;
+}
+
+.heroHeadline {
+  font-family: var(--font-display);
+  font-size: clamp(36px, 5.5vw, 80px);
+  font-weight: 300;
+  letter-spacing: -0.03em;
+  line-height: 0.95;
+  color: var(--color-ivory);
+  max-width: 14ch;
+}
+
+/* ── Body — story sections ───────────────────────── */
+.body {
+  max-width: 780px;
+  margin: 0 auto;
+  padding: var(--section-mobile) 24px;
+}
+
+@media (min-width: 1024px) {
+  .body {
+    padding: var(--section-desktop) 48px;
+  }
+}
+
+.storyBlock {
+  display: grid;
+  gap: 56px;
+}
+
+@media (min-width: 1024px) {
+  .storyBlock { gap: 72px; }
+}
+
+/* Each section: eyebrow + body */
+.storySection {}
+
+.eyebrow {
+  font-family: var(--font-body);
+  font-size: var(--text-10);
+  font-weight: 600;
+  letter-spacing: 0.22em;
+  text-transform: uppercase;
+  color: var(--color-rose-deep);
+  display: block;
+  margin-bottom: 18px;
+}
+
+/* Lead paragraph — display face */
+.storyLead {
+  font-family: var(--font-display);
+  font-size: clamp(22px, 2.8vw, 32px);
+  font-weight: 300;
+  letter-spacing: -0.02em;
+  line-height: 1.25;
+  color: var(--color-ink);
+  margin-bottom: 20px;
+}
+
+/* Body copy */
+.storyText {
+  font-family: var(--font-body);
+  font-size: var(--text-16);
+  color: var(--color-ink-soft);
+  line-height: 1.8;
+  letter-spacing: -0.005em;
+}
+
+/* Closing statement — centred, editorial */
+.closing {
+  margin-top: 80px;
+  padding-top: 56px;
+  border-top: 1px solid var(--color-line-soft);
+  text-align: center;
+}
+
+.closingQuote {
+  font-family: var(--font-display);
+  font-style: italic;
+  font-size: clamp(24px, 3vw, 40px);
+  font-weight: 300;
+  letter-spacing: -0.02em;
+  line-height: 1.2;
+  color: var(--color-ink);
+  max-width: 24ch;
+  margin: 0 auto;
+}
+
+/* ── Values band ─────────────────────────────────── */
+.values {
+  background-color: var(--color-cream);
+  padding: var(--section-mobile) 24px;
+}
+
+@media (min-width: 1024px) {
+  .values { padding: var(--section-desktop) 80px; }
+}
+
+.valuesInner {
+  max-width: 960px;
+  margin: 0 auto;
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 40px;
+}
+
+@media (min-width: 768px) {
+  .valuesInner {
+    grid-template-columns: repeat(3, 1fr);
+    gap: 56px;
+  }
+}
+
+.valuePillar {}
+
+.pillarNumber {
+  font-family: var(--font-display);
+  font-size: 48px;
+  font-weight: 300;
+  letter-spacing: -0.04em;
+  color: var(--color-blush);
+  line-height: 1;
+  margin-bottom: 12px;
+}
+
+.pillarTitle {
+  font-family: var(--font-body);
+  font-size: var(--text-10);
+  font-weight: 600;
+  letter-spacing: 0.20em;
+  text-transform: uppercase;
+  color: var(--color-ink);
+  margin-bottom: 12px;
+}
+
+.pillarText {
+  font-family: var(--font-body);
+  font-size: var(--text-12);
+  color: var(--color-ink-soft);
+  line-height: 1.7;
+}

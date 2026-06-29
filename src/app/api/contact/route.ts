@@ -1,21 +1,28 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { serverClient } from '@/sanity/client'
-import { z } from 'zod'
-
-const schema = z.object({
-  name: z.string().min(2),
-  email: z.string().email(),
-  message: z.string().min(10),
-})
+import { contactSchema, checkBodySize } from '@/lib/security'
 
 export async function POST(req: NextRequest) {
-  try {
-    const body = await req.json()
-    const parsed = schema.safeParse(body)
-    if (!parsed.success) return NextResponse.json({ error: 'Invalid input' }, { status: 400 })
+  if (!checkBodySize(req, 8_192)) {
+    return NextResponse.json({ error: 'Payload too large' }, { status: 413 })
+  }
 
+  let body: unknown
+  try {
+    body = await req.json()
+  } catch {
+    return NextResponse.json({ error: 'Invalid JSON' }, { status: 400 })
+  }
+
+  // Zod validates types + lengths; transform() sanitises text fields
+  const parsed = contactSchema.safeParse(body)
+  if (!parsed.success) {
+    return NextResponse.json({ error: 'Invalid input' }, { status: 400 })
+  }
+
+  try {
     await serverClient.create({
-      _type: 'inquiry',
+      _type:     'inquiry',
       ...parsed.data,
       createdAt: new Date().toISOString(),
     })
@@ -23,6 +30,6 @@ export async function POST(req: NextRequest) {
     return NextResponse.json({ ok: true })
   } catch (err) {
     console.error('[contact]', err)
-    return NextResponse.json({ error: 'Internal server error' }, { status: 500 })
+    return NextResponse.json({ error: 'Could not submit message' }, { status: 500 })
   }
 }

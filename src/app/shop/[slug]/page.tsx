@@ -7,7 +7,8 @@ import { urlFor } from '@/sanity/image'
 import ProductGallery from '@/components/product/ProductGallery'
 import AddToCartForm from '@/components/product/AddToCartForm'
 import ProductCard from '@/components/product/ProductCard'
-import PortableTextRenderer from '@/components/ui/PortableTextRenderer'
+import ProductDetailClient from './ProductDetailClient'
+import s from './product-detail.module.css'
 
 export const revalidate = 60
 
@@ -45,72 +46,35 @@ export default async function ProductPage({ params }: Props) {
     : undefined
 
   return (
-    <div className="pt-[60px]">
-      {/* Product Main */}
-      <section className="max-w-[1536px] mx-auto px-6 lg:px-12 section-padding">
-        <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 lg:gap-20">
-          {/* Gallery */}
-          <ProductGallery images={product.images} title={product.title} />
+    <div className={s.page}>
+      {/* Product main — gallery + info */}
+      <div className={s.main}>
+        {/* Gallery */}
+        <ProductGallery images={product.images} title={product.title} />
 
-          {/* Info — sticky on desktop */}
-          <div className="lg:sticky lg:top-[80px] lg:self-start">
-            {product.category && (
-              <p className="text-label mb-3" style={{ color: 'var(--color-ink-soft)' }}>
-                {product.category.title}
-              </p>
-            )}
-            <h1 className="font-display text-4xl lg:text-5xl leading-tight mb-4">
-              {product.title}
-            </h1>
+        {/* Info column — animated client component */}
+        <ProductDetailClient
+          product={product}
+          firstImageUrl={firstImageUrl}
+        />
+      </div>
 
-            {/* Price */}
-            <div className="flex items-center gap-4 mb-6">
-              <span className="font-display text-2xl">
-                GH¢ {product.price.toLocaleString()}
-              </span>
-              {product.compareAtPrice && product.compareAtPrice > product.price && (
-                <span className="text-lg line-through" style={{ color: 'var(--color-blush)' }}>
-                  GH¢ {product.compareAtPrice.toLocaleString()}
-                </span>
-              )}
-            </div>
-
-            {/* Description */}
-            {product.description && (
-              <div className="mb-8 text-sm leading-relaxed" style={{ color: 'var(--color-ink-soft)' }}>
-                <PortableTextRenderer value={product.description as import('@portabletext/types').PortableTextBlock[]} />
-              </div>
-            )}
-
-            {/* Add to Cart Form (client) */}
-            <AddToCartForm
-              product={product}
-              imageUrl={firstImageUrl}
-            />
-
-            {/* Size Guide link */}
-            <button
-              type="button"
-              data-size-guide
-              className="mt-4 text-label underline underline-offset-4 opacity-60 hover:opacity-100 transition-opacity"
-            >
-              Size Guide
-            </button>
+      {/* Related products */}
+      {related.length > 0 && (
+        <div className={s.related}>
+          <div className={s.relatedHead}>
+            <span className={s.relatedEyebrow}>Discover More</span>
+            <h2 className={s.relatedTitle}>You May Also Like</h2>
+          </div>
+          <div className={s.relatedGrid}>
+            {related.map(p => (
+              <ProductCard key={p._id} product={p} />
+            ))}
           </div>
         </div>
-      </section>
-
-      {/* Related Products */}
-      {related.length > 0 && (
-        <section className="section-padding px-6 lg:px-12 max-w-[1536px] mx-auto">
-          <h2 className="font-display text-3xl lg:text-4xl mb-10">You May Also Like</h2>
-          <div className="grid grid-cols-2 lg:grid-cols-4 gap-8 lg:gap-10">
-            {related.map((p) => <ProductCard key={p._id} product={p} />)}
-          </div>
-        </section>
       )}
 
-      {/* Structured Data */}
+      {/* Structured data */}
       <script
         type="application/ld+json"
         dangerouslySetInnerHTML={{

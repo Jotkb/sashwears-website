@@ -2,12 +2,15 @@
 
 import { useState, useEffect, useCallback, useRef } from 'react'
 import { useRouter, usePathname, useSearchParams } from 'next/navigation'
+import { motion, AnimatePresence } from 'framer-motion'
 import { client } from '@/sanity/client'
 import { allProductsQuery, allProductsCountQuery } from '@/sanity/queries'
 import type { Category, Product } from '@/types'
 import ProductCard from '@/components/product/ProductCard'
 import { IconClose } from '@/components/ui/Icons'
 import s from './shop.module.css'
+
+const ease = [0.16, 1, 0.3, 1] as const
 
 const PAGE_SIZE = 12
 
@@ -69,12 +72,12 @@ export default function ShopClient({
     }
 
     const [prods, count] = await Promise.all([
-      client.fetch(allProductsQuery, params),
+      client.fetch(allProductsQuery, params).then((r: Product[] | null) => r ?? []).catch(() => []),
       reset ? client.fetch(allProductsCountQuery, {
         category: category || null,
         minPrice: minPrice || null,
         maxPrice: maxPrice || null,
-      }) : Promise.resolve(total),
+      }).then((r: number | null) => r ?? 0).catch(() => 0) : Promise.resolve(total),
     ])
 
     if (reset) {
@@ -106,7 +109,10 @@ export default function ShopClient({
     <div className={s.page}>
       {/* Page header */}
       <div className={s.pageHead}>
-        <h1 className={s.pageTitle}>{pageTitle}</h1>
+        <div className={s.pageTitleGroup}>
+          <span className={s.pageEyebrow}>Collection</span>
+          <h1 className={s.pageTitle}>{pageTitle}</h1>
+        </div>
         {!loading && (
           <span className={s.pieceCount}>
             {total} {total === 1 ? 'piece' : 'pieces'}
@@ -153,49 +159,78 @@ export default function ShopClient({
             </select>
           </div>
 
-          {loading ? (
-            <div className={s.skeleton}>
-              {Array.from({ length: 8 }).map((_, i) => (
-                <div key={i} className={s.skeletonCard}>
-                  <div className={s.skeletonImage} />
-                  <div className={s.skeletonLine} />
-                  <div className={s.skeletonLineShort} />
-                </div>
-              ))}
-            </div>
-          ) : products.length === 0 ? (
-            <div className={s.empty}>
-              <p className={s.emptyText}>Nothing here yet.</p>
-              <button
-                type="button"
-                className={s.emptyAction}
-                onClick={() => handleCategory('')}
+          <AnimatePresence mode="wait">
+            {loading ? (
+              <motion.div
+                key="skeleton"
+                className={s.skeleton}
+                initial={{ opacity: 0 }}
+                animate={{ opacity: 1 }}
+                exit={{ opacity: 0 }}
+                transition={{ duration: 0.25 }}
               >
-                Clear filters
-              </button>
-            </div>
-          ) : (
-            <>
-              <div className={s.grid}>
-                {products.map((p, i) => (
-                  <ProductCard key={p._id} product={p} priority={i < 4} />
+                {Array.from({ length: 8 }).map((_, i) => (
+                  <div key={i} className={s.skeletonCard}>
+                    <div className={s.skeletonImage} />
+                    <div className={s.skeletonLine} />
+                    <div className={s.skeletonLineShort} />
+                  </div>
                 ))}
-              </div>
+              </motion.div>
+            ) : products.length === 0 ? (
+              <motion.div
+                key="empty"
+                className={s.empty}
+                initial={{ opacity: 0, y: 20 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ duration: 0.5, ease }}
+              >
+                <p className={s.emptyText}>Nothing here yet.</p>
+                <button
+                  type="button"
+                  className={s.emptyAction}
+                  onClick={() => handleCategory('')}
+                >
+                  Clear filters
+                </button>
+              </motion.div>
+            ) : (
+              <motion.div key="grid">
+                <motion.div
+                  className={s.grid}
+                  initial="hidden"
+                  animate="show"
+                  variants={{ show: { transition: { staggerChildren: 0.05 } } }}
+                >
+                  {products.map((p, i) => (
+                    <motion.div
+                      key={p._id}
+                      variants={{
+                        hidden: { opacity: 0, y: 28, scale: 0.97 },
+                        show:   { opacity: 1, y: 0,  scale: 1,
+                          transition: { duration: 0.5, ease } },
+                      }}
+                    >
+                      <ProductCard product={p} priority={i < 4} />
+                    </motion.div>
+                  ))}
+                </motion.div>
 
-              {products.length < total && (
-                <div className={s.loadMore}>
-                  <button
-                    type="button"
-                    onClick={() => load(false)}
-                    disabled={loadingMore}
-                    className="btn-outline"
-                  >
-                    {loadingMore ? 'Loading…' : 'Load More'}
-                  </button>
-                </div>
-              )}
-            </>
-          )}
+                {products.length < total && (
+                  <div className={s.loadMore}>
+                    <button
+                      type="button"
+                      onClick={() => load(false)}
+                      disabled={loadingMore}
+                      className="btn-outline"
+                    >
+                      {loadingMore ? 'Loading…' : 'Load More'}
+                    </button>
+                  </div>
+                )}
+              </motion.div>
+            )}
+          </AnimatePresence>
         </div>
       </div>
 

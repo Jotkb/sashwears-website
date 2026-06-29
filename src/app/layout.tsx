@@ -3,6 +3,10 @@ import { Inter, Cormorant_Garamond } from 'next/font/google'
 import { Analytics } from '@vercel/analytics/next'
 import Nav from '@/components/layout/Nav'
 import Footer from '@/components/layout/Footer'
+import AnnouncementBar from '@/components/layout/AnnouncementBar'
+import ThemeProvider from '@/components/layout/ThemeProvider'
+import { BarProvider } from '@/components/layout/BarContext'
+import CustomCursor from '@/components/ui/CustomCursor'
 import { client } from '@/sanity/client'
 import { siteSettingsQuery } from '@/sanity/queries'
 import type { SiteSettings } from '@/types'
@@ -36,18 +40,25 @@ export const metadata: Metadata = {
 }
 
 export default async function RootLayout({ children }: { children: React.ReactNode }) {
-  const settings: SiteSettings = await client.fetch(siteSettingsQuery).catch(() => ({}))
+  const settings: SiteSettings = await client.fetch(siteSettingsQuery).then((r: SiteSettings | null) => r ?? {}).catch(() => ({}))
 
   return (
-    <html lang="en" className={`${inter.variable} ${cormorant.variable}`}>
-      <body style={{ fontFamily: 'var(--font-inter, Inter, sans-serif)' }}>
-        <Nav />
-        <main className="page-enter">{children}</main>
-        <Footer
-          whatsappNumber={settings.whatsappNumber}
-          instagramUrl={settings.instagramUrl}
-          tiktokUrl={settings.tiktokUrl}
-        />
+    // suppressHydrationWarning: data-theme is set client-side by ThemeProvider
+    <html lang="en" className={`${inter.variable} ${cormorant.variable}`} suppressHydrationWarning>
+      <body>
+        <ThemeProvider>
+          <BarProvider>
+            <CustomCursor />
+            <AnnouncementBar message={settings.announcementText} />
+            <Nav />
+            <main>{children}</main>
+            <Footer
+              whatsappNumber={settings.whatsappNumber}
+              instagramUrl={settings.instagramUrl}
+              tiktokUrl={settings.tiktokUrl}
+            />
+          </BarProvider>
+        </ThemeProvider>
         <Analytics />
         {/* Meta Pixel — fill in pixel ID to activate
         <Script id="meta-pixel" strategy="afterInteractive">{`

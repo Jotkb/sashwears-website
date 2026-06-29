@@ -5,7 +5,8 @@ import { useEffect, useState, useRef } from 'react'
 import { usePathname } from 'next/navigation'
 import { useCartStore } from '@/store/cart'
 import CartDrawer from './CartDrawer'
-import { IconBag, IconMenu, IconClose } from '@/components/ui/Icons'
+import { IconBag, IconMenu, IconClose, IconSun, IconMoon } from '@/components/ui/Icons'
+import { useTheme } from './ThemeProvider'
 import s from './nav.module.css'
 
 const navLinks = [
@@ -24,8 +25,18 @@ export default function Nav() {
   const { getItemCount, openCart } = useCartStore()
   const count = getItemCount()
 
+  const { theme, toggle } = useTheme()
+
   const onHeroPage = pathname === '/'
-  const isDark     = scrolled || menuOpen || !onHeroPage
+  // Hero page: text starts dark (readable before hero loads), transitions to light after delay
+  const [heroReady, setHeroReady] = useState(false)
+  useEffect(() => {
+    if (!onHeroPage) return
+    const t = setTimeout(() => setHeroReady(true), 400)
+    return () => clearTimeout(t)
+  }, [onHeroPage])
+
+  const isDark = scrolled || menuOpen || !onHeroPage || !heroReady
 
   useEffect(() => {
     const onScroll = () => setScrolled(window.scrollY > 40)
@@ -50,6 +61,7 @@ export default function Nav() {
         className={s.header}
         data-scrolled={scrolled ? 'true' : 'false'}
         data-menu={menuOpen ? 'true' : 'false'}
+        data-hero={onHeroPage && heroReady && !scrolled && !menuOpen ? 'true' : 'false'}
       >
         <div className={s.inner}>
 
@@ -107,6 +119,16 @@ export default function Nav() {
                 </Link>
               ))}
             </nav>
+
+            <button
+              type="button"
+              className={s.themeBtn}
+              data-dark={isDark ? 'true' : 'false'}
+              onClick={toggle}
+              aria-label={theme === 'dark' ? 'Switch to light mode' : 'Switch to dark mode'}
+            >
+              {theme === 'dark' ? <IconSun size={17} /> : <IconMoon size={17} />}
+            </button>
 
             <button
               type="button"

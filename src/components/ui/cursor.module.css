@@ -1,0 +1,54 @@
+/* ── Custom cursor — desktop only ────────────────── */
+/* Hidden on touch/coarse-pointer devices via display:none */
+@media (pointer: coarse) {
+  .dot, .ring { display: none; }
+}
+
+/* Dot — 6px filled circle, follows instantly */
+.dot {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background-color: var(--color-ink);
+  /* Offset so the centre of the dot is at cursor position */
+  margin-top: -3px;
+  margin-left: -3px;
+  pointer-events: none;
+  z-index: 9999;
+  opacity: 0;
+  /* No transition — dot moves at cursor speed */
+  will-change: transform;
+}
+
+/* Ring — 32px border-only circle, lags behind */
+.ring {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  border: 1px solid var(--color-ink);
+  background: transparent;
+  /* Offset so the centre of the ring is at cursor position */
+  margin-top: -16px;
+  margin-left: -16px;
+  pointer-events: none;
+  z-index: 9998;
+  opacity: 0;
+  will-change: transform;
+  transition: opacity 300ms ease, width 200ms ease, height 200ms ease, margin 200ms ease, border-color 300ms ease;
+}
+
+/* Scale effect when hovering interactive elements */
+.ring[data-hover] {
+  width: 48px;
+  height: 48px;
+  margin-top: -24px;
+  margin-left: -24px;
+  border-color: var(--color-blush);
+  opacity: 0.6;
+}

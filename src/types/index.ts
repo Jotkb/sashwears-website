@@ -73,6 +73,7 @@ export interface Order {
 export interface SiteSettings {
   heroVideoUrl?: string
   heroCopy?: string
+  announcementText?: string
   whatsappNumber?: string
   instagramUrl?: string
   tiktokUrl?: string

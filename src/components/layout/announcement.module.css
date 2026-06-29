@@ -1,0 +1,80 @@
+/* ── Announcement bar ────────────────────────────── */
+.bar {
+  width: 100%;
+  background-color: var(--color-ink);
+  display: flex;
+  align-items: center;
+  overflow: hidden;
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  z-index: 110;
+  height: var(--bar-h);
+}
+
+/* ── Marquee track ───────────────────────────────── */
+.track {
+  display: flex;
+  white-space: nowrap;
+  animation: marquee 28s linear infinite;
+  /* Pause on hover for accessibility */
+  will-change: transform;
+}
+
+.bar:hover .track {
+  animation-play-state: paused;
+}
+
+.message {
+  font-family: var(--font-body);
+  font-size: var(--text-10);
+  font-weight: 500;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  color: rgba(250,247,242,0.88);
+  line-height: 1.4;
+  flex-shrink: 0;
+  padding-right: 0;
+}
+
+.message::after {
+  content: '✦';
+  display: inline-block;
+  margin: 0 18px;
+  color: var(--color-rose-deep);
+  font-size: 8px;
+  vertical-align: middle;
+  letter-spacing: 0;
+}
+
+/* ── Close button ────────────────────────────────── */
+.close {
+  position: absolute;
+  right: 12px;
+  top: 50%;
+  transform: translateY(-50%);
+  width: 32px;
+  height: 32px;
+  min-width: 32px;
+  min-height: 32px;
+  color: rgba(250,247,242,0.45);
+  transition: color 150ms ease;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  /* Sit above marquee track */
+  z-index: 1;
+  background-color: var(--color-ink);
+  padding-left: 4px;
+}
+
+.close:hover {
+  color: rgba(250,247,242,0.90);
+}
+
+/* ── Keyframes ───────────────────────────────────── */
+@keyframes marquee {
+  from { transform: translateX(0); }
+  to   { transform: translateX(-33.333%); }
+}

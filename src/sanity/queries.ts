@@ -57,7 +57,7 @@ export const categoriesQuery = groq`
 
 export const lookbookEntriesQuery = groq`
   *[_type == "lookbook"] | order(_createdAt desc) {
-    _id, title, caption,
+    _id, title, caption, layout,
     "heroImage": heroImage{asset->{_id, url}, hotspot},
     "featuredProducts": featuredProducts[]->{_id, title, slug}
   }

@@ -1,0 +1,258 @@
+/* ── Order confirmation page ─────────────────────── */
+
+.page {
+  padding-top: calc(var(--bar-h) + var(--nav-h));
+  min-height: 100svh;
+}
+
+.inner {
+  max-width: 680px;
+  margin: 0 auto;
+  padding: 64px 24px 120px;
+}
+
+@media (min-width: 1024px) {
+  .inner { padding: 80px 24px 128px; }
+}
+
+/* ── Header ─────────────────────────────────────── */
+.head {
+  margin-bottom: 40px;
+  padding-bottom: 40px;
+  border-bottom: 1px solid var(--color-line);
+}
+
+/* Subtle checkmark accent above eyebrow */
+.head::before {
+  content: '';
+  display: block;
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  background-color: var(--color-cream);
+  border: 1px solid var(--color-line);
+  background-image: url("data:image/svg+xml,%3Csvg width='14' height='10' viewBox='0 0 14 10' fill='none' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath d='M1 5l4 4 8-8' stroke='%23B07A6E' stroke-width='1.5' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E");
+  background-repeat: no-repeat;
+  background-position: center;
+  margin-bottom: 20px;
+}
+
+.eyebrow {
+  font-family: var(--font-body);
+  font-size: var(--text-10);
+  font-weight: 500;
+  letter-spacing: 0.22em;
+  text-transform: uppercase;
+  color: var(--color-rose-deep);
+  display: block;
+  margin-bottom: 16px;
+}
+
+.title {
+  font-family: var(--font-display);
+  font-size: clamp(40px, 5.5vw, 72px);
+  font-weight: 300;
+  letter-spacing: -0.035em;
+  line-height: 0.95;
+  color: var(--color-ink);
+  margin-bottom: 14px;
+}
+
+.subtitle {
+  font-family: var(--font-body);
+  font-size: var(--text-14);
+  color: var(--color-ink-soft);
+  line-height: 1.6;
+}
+
+.orderNum {
+  font-weight: 500;
+  color: var(--color-ink);
+}
+
+/* ── Status badges ──────────────────────────────── */
+.badges {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 10px;
+  margin-bottom: 48px;
+}
+
+.badge {
+  font-family: var(--font-body);
+  font-size: var(--text-10);
+  font-weight: 500;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+  padding: 7px 14px;
+  line-height: 1;
+  display: inline-block;
+}
+
+.badgePaid    { background-color: #2E7D32; color: var(--color-ivory); }
+.badgePending { background-color: var(--color-rose-deep); color: var(--color-ivory); }
+.badgeFailed  { background-color: #B71C1C; color: var(--color-ivory); }
+
+.badgeStatus {
+  border: 1px solid var(--color-line);
+  color: var(--color-ink-soft);
+}
+
+/* ── Section label ──────────────────────────────── */
+.sectionLabel {
+  font-family: var(--font-body);
+  font-size: var(--text-10);
+  font-weight: 500;
+  letter-spacing: 0.22em;
+  text-transform: uppercase;
+  color: var(--color-ink-soft);
+  display: block;
+  margin-bottom: 20px;
+}
+
+/* ── Items list ─────────────────────────────────── */
+.items {
+  margin-bottom: 40px;
+}
+
+.itemRow {
+  display: flex;
+  justify-content: space-between;
+  align-items: baseline;
+  padding: 14px 0;
+  border-bottom: 1px solid var(--color-line-soft);
+  gap: 16px;
+}
+
+.itemLeft {
+  display: flex;
+  align-items: baseline;
+  gap: 8px;
+  flex-wrap: wrap;
+  flex: 1;
+  min-width: 0;
+}
+
+.itemTitle {
+  font-family: var(--font-body);
+  font-size: var(--text-14);
+  color: var(--color-ink);
+}
+
+.itemMeta {
+  font-family: var(--font-body);
+  font-size: var(--text-12);
+  color: var(--color-ink-faint);
+}
+
+.itemPrice {
+  font-family: var(--font-display);
+  font-size: var(--text-16);
+  font-weight: 300;
+  color: var(--color-ink);
+  white-space: nowrap;
+  flex-shrink: 0;
+}
+
+/* ── Totals ─────────────────────────────────────── */
+.totals {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  margin-bottom: 48px;
+  padding-top: 4px;
+}
+
+.totalRow {
+  display: flex;
+  justify-content: space-between;
+  align-items: baseline;
+}
+
+.totalLabel {
+  font-family: var(--font-body);
+  font-size: var(--text-12);
+  color: var(--color-ink-soft);
+}
+
+.totalVal {
+  font-family: var(--font-body);
+  font-size: var(--text-12);
+  color: var(--color-ink-soft);
+}
+
+.grandRow {
+  display: flex;
+  justify-content: space-between;
+  align-items: baseline;
+  padding-top: 16px;
+  margin-top: 6px;
+  border-top: 1px solid var(--color-line);
+}
+
+.grandLabel {
+  font-family: var(--font-display);
+  font-size: 22px;
+  font-weight: 300;
+  letter-spacing: -0.015em;
+  color: var(--color-ink);
+}
+
+.grandVal {
+  font-family: var(--font-display);
+  font-size: 24px;
+  font-weight: 300;
+  letter-spacing: -0.02em;
+  color: var(--color-ink);
+}
+
+/* ── Customer card ──────────────────────────────── */
+.customer {
+  background-color: var(--color-cream);
+  border: 1px solid var(--color-line-soft);
+  padding: 28px 24px;
+  margin-bottom: 48px;
+}
+
+.customerLine {
+  font-family: var(--font-body);
+  font-size: var(--text-14);
+  color: var(--color-ink);
+  line-height: 1.7;
+}
+
+.customerLineSub {
+  font-family: var(--font-body);
+  font-size: var(--text-14);
+  color: var(--color-ink-soft);
+  line-height: 1.7;
+}
+
+/* ── What's next ────────────────────────────────── */
+.next {
+  margin-bottom: 48px;
+  padding-top: 40px;
+  border-top: 1px solid var(--color-line-soft);
+}
+
+.nextTitle {
+  font-family: var(--font-display);
+  font-size: clamp(22px, 2.5vw, 30px);
+  font-weight: 300;
+  letter-spacing: -0.02em;
+  color: var(--color-ink);
+  margin-bottom: 14px;
+}
+
+.nextBody {
+  font-family: var(--font-body);
+  font-size: var(--text-14);
+  color: var(--color-ink-soft);
+  line-height: 1.8;
+}
+
+.refNum {
+  font-weight: 500;
+  color: var(--color-ink);
+}

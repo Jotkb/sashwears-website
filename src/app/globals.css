@@ -11,6 +11,7 @@
   --color-ink-faint:  #9E9890;
   --color-line:       #E5DED2;
   --color-line-soft:  #EDE8E0;
+  --color-surface:    #F4EFE8;
 
   /* ── Typography ──────────────────────────────── */
   --font-display: "Cormorant Garamond", Georgia, serif;
@@ -48,6 +49,10 @@
   --section-desktop: 96px;
   --section-mobile:  56px;
 
+  /* Layout geometry — fixed chrome heights */
+  --nav-h: 64px;
+  --bar-h: 38px;
+
   /* ── Motion ──────────────────────────────────── */
   --ease-out:   cubic-bezier(0.16, 1, 0.3, 1);
   --ease-in:    cubic-bezier(0.4, 0, 1, 1);
@@ -56,6 +61,20 @@
   --duration-base:   250ms;
   --duration-slow:   400ms;
   --duration-reveal: 700ms;
+}
+
+/* ── Dark mode overrides ──────────────────────────── */
+[data-theme="dark"] {
+  --color-ivory:     #0F0E0B;
+  --color-cream:     #161410;
+  --color-surface:   #1C1A15;
+  --color-ink:       #F2EDE4;
+  --color-ink-soft:  #B8B0A4;
+  --color-ink-faint: #6B6560;
+  --color-line:      #2A2720;
+  --color-line-soft: #221F1A;
+  --color-blush:     #9E6A5C;
+  --color-rose-deep: #C27B6A;
 }
 
 /* ── Reset ───────────────────────────────────────── */
@@ -99,6 +118,12 @@
   img, video {
     display: block;
     max-width: 100%;
+  }
+
+  /* Hide default cursor on pointer-fine devices (desktop); replaced by CustomCursor */
+  @media (pointer: fine) {
+    body { cursor: none; }
+    a, button, [role="button"], label, select { cursor: none; }
   }
 
   button {
@@ -160,6 +185,11 @@
     letter-spacing: 0.04em;
     color: var(--color-ink-soft);
     line-height: 1.5;
+  }
+
+  /* ── Page offset — clears fixed announcement bar + nav ── */
+  .page-offset {
+    padding-top: calc(var(--bar-h) + var(--nav-h));
   }
 
   /* ── Section spacing ── */
@@ -312,8 +342,8 @@
 }
 
 @keyframes fadeIn {
-  from { opacity: 0; }
-  to   { opacity: 1; }
+  from { opacity: 0.4; transform: translateY(4px); }
+  to   { opacity: 1; transform: translateY(0); }
 }
 
 @keyframes scaleIn {
@@ -332,7 +362,7 @@
 }
 
 .page-enter {
-  animation: fadeIn var(--duration-base) var(--ease-out);
+  animation: fadeIn 280ms cubic-bezier(0.16, 1, 0.3, 1) both;
 }
 
 .animate-fade-up {
@@ -341,6 +371,68 @@
 
 .animate-scale-in {
   animation: scaleIn var(--duration-slow) var(--ease-out) both;
+}
+
+/* ── Floating ambient orbs ───────────────────────── */
+/* Used as decorative background elements on light sections */
+@keyframes orbFloat {
+  0%, 100% { transform: translate(0, 0)   scale(1);    }
+  33%       { transform: translate(18px, -24px) scale(1.06); }
+  66%       { transform: translate(-12px, 16px)  scale(0.96); }
+}
+
+@keyframes orbPulse {
+  0%, 100% { opacity: 0.06; }
+  50%       { opacity: 0.13; }
+}
+
+.orb {
+  position: absolute;
+  border-radius: 50%;
+  pointer-events: none;
+  will-change: transform;
+  animation:
+    orbFloat var(--orb-dur, 14s) ease-in-out infinite,
+    orbPulse var(--orb-dur, 14s) ease-in-out infinite;
+  animation-delay: var(--orb-delay, 0s);
+}
+
+.orb--blush {
+  background: radial-gradient(circle, var(--color-blush) 0%, transparent 70%);
+}
+
+.orb--rose {
+  background: radial-gradient(circle, var(--color-rose-deep) 0%, transparent 70%);
+}
+
+.orb--ink {
+  background: radial-gradient(circle, var(--color-ink) 0%, transparent 70%);
+}
+
+/* ── 3D perspective utility ─────────────────────── */
+.perspective {
+  perspective: 1000px;
+}
+
+.preserve-3d {
+  transform-style: preserve-3d;
+}
+
+/* ── Shimmer skeleton ───────────────────────────── */
+@keyframes shimmer {
+  from { background-position: -200% 0; }
+  to   { background-position:  200% 0; }
+}
+
+.skeleton {
+  background: linear-gradient(
+    90deg,
+    var(--color-surface) 25%,
+    var(--color-line-soft) 50%,
+    var(--color-surface) 75%
+  );
+  background-size: 200% 100%;
+  animation: shimmer 1.6s ease-in-out infinite;
 }
 
 /* ── Scrollbar ───────────────────────────────────── */

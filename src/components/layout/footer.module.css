@@ -22,23 +22,31 @@
 
 .footerWordmark {
   font-family: var(--font-display);
-  font-size: 36px;
+  font-size: clamp(44px, 6vw, 72px);
   font-weight: 300;
   letter-spacing: -0.02em;
   color: var(--color-ivory);
   display: block;
-  margin-bottom: 8px;
+  margin-bottom: 16px;
+  line-height: 1;
 }
 
-@media (min-width: 1024px) {
-  .footerWordmark { font-size: 48px; }
+/* Subtle rule between wordmark and tagline */
+.footerWordmark::after {
+  content: '';
+  display: block;
+  width: 40px;
+  height: 1px;
+  background: rgba(250,247,242,0.18);
+  margin-top: 20px;
 }
 
 .tagline {
   font-family: var(--font-body);
   font-size: 12px;
   letter-spacing: 0.06em;
-  color: rgba(250,247,242,0.35);
+  color: rgba(250,247,242,0.45);
+  margin-top: 12px;
 }
 
 /* Link columns */
@@ -95,7 +103,8 @@
   text-transform: uppercase;
   color: var(--color-rose-deep);
   display: block;
-  margin-bottom: 10px;
+  margin-bottom: 8px;
+  margin-top: 4px;
 }
 
 .newsletterNote {
@@ -194,7 +203,49 @@
 }
 
 .followList {
-  margin-bottom: 32px;
+  margin-bottom: 28px;
+}
+
+/* Social icon buttons */
+.socialRow {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  margin-bottom: 28px;
+}
+
+.socialBtn {
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+  font-family: var(--font-body);
+  font-size: 12px;
+  font-weight: 400;
+  color: rgba(250,247,242,0.50);
+  letter-spacing: 0.02em;
+  transition: color 150ms ease;
+}
+
+.socialBtn:hover {
+  color: var(--color-ivory);
+}
+
+.socialBtn svg {
+  flex-shrink: 0;
+  opacity: 0.7;
+  transition: opacity 150ms ease;
+}
+
+.socialBtn:hover svg {
+  opacity: 1;
+}
+
+.socialPlaceholder {
+  font-family: var(--font-display);
+  font-size: 13px;
+  font-style: italic;
+  color: rgba(250,247,242,0.25);
+  margin-bottom: 28px;
 }
 
 .submittedNote {

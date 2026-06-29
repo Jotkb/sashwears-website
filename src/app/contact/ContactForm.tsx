@@ -4,18 +4,57 @@ import { useForm } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { z } from 'zod'
 import { useState } from 'react'
+import { motion, AnimatePresence } from 'framer-motion'
+import s from './contact.module.css'
 
 const schema = z.object({
-  name: z.string().min(2, 'Please enter your name'),
-  email: z.string().email('Please enter a valid email'),
+  name:    z.string().min(2, 'Please enter your name'),
+  email:   z.string().email('Please enter a valid email'),
   message: z.string().min(10, 'Message must be at least 10 characters'),
 })
 
 type FormValues = z.infer<typeof schema>
 
+const ease = [0.16, 1, 0.3, 1] as const
+
+/* Floating-label field wrapper */
+function FloatField({
+  label,
+  error,
+  children,
+}: { label: string; error?: string; children: React.ReactNode }) {
+  return (
+    <motion.div
+      className={s.floatField}
+      initial={{ opacity: 0, y: 20 }}
+      animate={{ opacity: 1, y: 0 }}
+      transition={{ duration: 0.55, ease }}
+    >
+      <div className={s.floatInner}>
+        {children}
+        <span className={s.floatLabel}>{label}</span>
+        <span className={s.floatLine} />
+      </div>
+      <AnimatePresence>
+        {error && (
+          <motion.p
+            className={s.fieldError}
+            initial={{ opacity: 0, y: -4, height: 0 }}
+            animate={{ opacity: 1, y: 0,  height: 'auto' }}
+            exit={{   opacity: 0, y: -4,  height: 0 }}
+            transition={{ duration: 0.2 }}
+          >
+            {error}
+          </motion.p>
+        )}
+      </AnimatePresence>
+    </motion.div>
+  )
+}
+
 export default function ContactForm() {
   const [submitted, setSubmitted] = useState(false)
-  const [error, setError] = useState('')
+  const [error,     setError]     = useState('')
 
   const {
     register,
@@ -42,58 +81,74 @@ export default function ContactForm() {
 
   if (submitted) {
     return (
-      <div className="py-8">
-        <p className="font-display text-2xl mb-2">Thank you.</p>
-        <p style={{ color: 'var(--color-ink-soft)' }}>We will be in touch shortly.</p>
-      </div>
+      <motion.div
+        className={s.success}
+        initial={{ opacity: 0, scale: 0.97 }}
+        animate={{ opacity: 1, scale: 1 }}
+        transition={{ duration: 0.5, ease }}
+      >
+        <p className={s.successTitle}>Thank you.</p>
+        <p className={s.successNote}>We will be in touch shortly.</p>
+      </motion.div>
     )
   }
 
-  const inputStyle = {
-    width: '100%',
-    padding: '12px 0',
-    background: 'transparent',
-    border: 'none',
-    borderBottom: '1px solid var(--color-line)',
-    outline: 'none',
-    fontSize: 14,
-    color: 'var(--color-ink)',
-  } as React.CSSProperties
-
   return (
-    <form onSubmit={handleSubmit(onSubmit)} className="flex flex-col gap-6">
-      <div>
+    <form className={s.form} onSubmit={handleSubmit(onSubmit)}>
+      <FloatField label="Your name" error={errors.name?.message}>
         <input
           {...register('name')}
-          placeholder="Your name"
-          style={inputStyle}
+          placeholder=" "
+          className={s.floatInput}
+          autoComplete="name"
         />
-        {errors.name && <p className="text-xs mt-1" style={{ color: 'var(--color-rose-deep)' }}>{errors.name.message}</p>}
-      </div>
-      <div>
+      </FloatField>
+
+      <FloatField label="Email address" error={errors.email?.message}>
         <input
           {...register('email')}
           type="email"
-          placeholder="Email address"
-          style={inputStyle}
+          placeholder=" "
+          className={s.floatInput}
+          autoComplete="email"
         />
-        {errors.email && <p className="text-xs mt-1" style={{ color: 'var(--color-rose-deep)' }}>{errors.email.message}</p>}
-      </div>
-      <div>
+      </FloatField>
+
+      <FloatField label="Your message" error={errors.message?.message}>
         <textarea
           {...register('message')}
-          placeholder="Your message"
+          placeholder=" "
           rows={5}
-          style={{ ...inputStyle, resize: 'none' }}
+          className={s.floatTextarea}
         />
-        {errors.message && <p className="text-xs mt-1" style={{ color: 'var(--color-rose-deep)' }}>{errors.message.message}</p>}
-      </div>
+      </FloatField>
 
-      {error && <p className="text-sm" style={{ color: 'var(--color-rose-deep)' }}>{error}</p>}
+      <AnimatePresence>
+        {error && (
+          <motion.p
+            className={s.submitError}
+            initial={{ opacity: 0, y: -6 }}
+            animate={{ opacity: 1, y: 0 }}
+            exit={{ opacity: 0 }}
+          >
+            {error}
+          </motion.p>
+        )}
+      </AnimatePresence>
 
-      <button type="submit" disabled={isSubmitting} className="btn-primary self-start">
-        {isSubmitting ? 'Sending...' : 'Send'}
-      </button>
+      <motion.div
+        initial={{ opacity: 0, y: 16 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ delay: 0.3, duration: 0.5, ease }}
+      >
+        <button
+          type="submit"
+          disabled={isSubmitting}
+          className={`btn-primary ${s.submitBtn}`}
+        >
+          {isSubmitting ? 'Sending…' : 'Send Message'}
+        </button>
+      </motion.div>
     </form>
   )
 }
