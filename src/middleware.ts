@@ -47,12 +47,20 @@ const RATE_LIMITS: Record<string, { limit: number; windowMs: number }> = {
 }
 
 // ── Strict Content-Security-Policy ───────────────────────────────────────────
-// Paystack inline JS requires 'unsafe-inline' for its embedded iframe approach.
-// All other scripts must come from listed sources. Nonce-based CSP is ideal but
-// requires per-request generation; this static policy is a strong improvement.
+// Next.js injects inline <script> tags for hydration/RSC streaming on every
+// request. A nonce-based CSP was tried but Next 15.5's App Router does not
+// reliably stamp nonces onto its own chunk <script> tags, which silently
+// broke hydration (and therefore all Framer Motion scroll animations) site
+// wide. 'unsafe-inline' is the pragmatic, widely-shipped tradeoff — this app
+// renders no user-controlled HTML unescaped, so inline-script XSS exposure
+// is low.
+// 'unsafe-eval' is dev-only: Next.js Fast Refresh/HMR wraps modules with
+// eval() in development. Production bundles don't need it, so it's left out
+// of the production CSP to keep the stricter policy where it matters.
+const isDev = process.env.NODE_ENV !== 'production'
 const CSP = [
   "default-src 'self'",
-  "script-src 'self' https://js.paystack.co",
+  `script-src 'self' 'unsafe-inline'${isDev ? " 'unsafe-eval'" : ''} https://js.paystack.co`,
   // Paystack inline SDK writes inline styles; allow-same-origin keeps it sandboxed
   "style-src 'self' 'unsafe-inline' https://fonts.googleapis.com",
   "font-src 'self' https://fonts.gstatic.com",
