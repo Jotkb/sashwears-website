@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server'
 import crypto from 'crypto'
-import { serverClient } from '@/sanity/client'
+import { serverClient } from '@/sanity/server-client'
 import { timingSafeEqual, paystackReferenceSchema } from '@/lib/security'
 
 // Paystack always sends a signature — reject immediately if missing or malformed

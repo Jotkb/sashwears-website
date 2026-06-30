@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server'
-import { serverClient } from '@/sanity/client'
+import { serverClient } from '@/sanity/server-client'
 import { subscribeSchema, checkBodySize } from '@/lib/security'
 
 export async function POST(req: NextRequest) {
