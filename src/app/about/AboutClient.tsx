@@ -76,7 +76,7 @@ export default function AboutClient() {
       <div ref={heroRef} className={s.hero}>
         <motion.div className={s.heroImageWrap} style={{ y: heroY }}>
           <Image
-            src="/images/image-28-06-26-22-08-16.jpeg"
+            src="/images/image-28-06-26-22-08-5.jpeg"
             alt="Sashwears — editorial"
             fill
             priority
