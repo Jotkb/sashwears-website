@@ -111,8 +111,15 @@ export const subscribeSchema = z.object({
  * Timing-safe string equality.
  * Prevents side-channel attacks when comparing HMAC signatures.
  */
+const HEX_PATTERN = /^[0-9a-f]+$/i
+
 export function timingSafeEqual(a: string, b: string): boolean {
-  if (a.length !== b.length) {
+  // Buffer.from(str, 'hex') silently truncates at the first non-hex
+  // character instead of throwing, which can make two equal-length hex
+  // strings decode to differently-sized buffers and crash
+  // crypto.timingSafeEqual. Reject anything that isn't valid hex up front
+  // so a malformed signature header fails closed instead of 500ing.
+  if (a.length !== b.length || !HEX_PATTERN.test(a) || !HEX_PATTERN.test(b)) {
     // Still do a comparison on equal-length dummy strings to prevent length leaks
     crypto.timingSafeEqual(Buffer.from(a), Buffer.from(a))
     return false

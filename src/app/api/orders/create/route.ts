@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server'
-import { serverClient } from '@/sanity/client'
+import { serverClient } from '@/sanity/server-client'
 import { verifyPaystackTransaction } from '@/lib/paystack'
 import {
   createOrderSchema,
@@ -57,25 +57,44 @@ export async function POST(req: NextRequest) {
       return NextResponse.json({ error: 'Order could not be created' }, { status: 402 })
     }
 
-    // ── Recalculate subtotal server-side from Paystack-verified items ──────
-    // We use the Paystack-verified total as ground truth, not the client total.
-    // The client subtotal is only used for display; the real authority is txn.amount.
+    // ── Re-derive prices from Sanity — never trust client-submitted prices ──
+    // The client's `item.price` is display-only; an attacker can edit it
+    // (and the matching Paystack charge) together to pay a fraction of the
+    // real cost. The catalog price in Sanity is the only source of truth.
+    const productIds = [...new Set(items.map(i => i.productId))]
+    const catalogProducts = await serverClient.fetch<{ _id: string; price: number }[]>(
+      `*[_type == "product" && _id in $ids]{_id, price}`,
+      { ids: productIds }
+    )
+    const priceById = new Map(catalogProducts.map(p => [p._id, p.price]))
+
+    for (const item of items) {
+      const catalogPrice = priceById.get(item.productId)
+      if (catalogPrice === undefined) {
+        return NextResponse.json({ error: 'Order could not be created' }, { status: 400 })
+      }
+      item.price = catalogPrice
+    }
+
+    // ── Recalculate subtotal server-side from catalog-verified items ───────
+    // We use the Paystack-verified total as ground truth against the
+    // catalog-derived subtotal — not anything the client submitted.
     const verifiedTotalPesewas = txn.amount  // what Paystack actually charged
-    const clientSubtotal = items.reduce((sum, i) => sum + i.price * i.quantity, 0)
-    const clientTotalPesewas = Math.round((clientSubtotal + shippingFee) * 100)
+    const catalogSubtotal = items.reduce((sum, i) => sum + i.price * i.quantity, 0)
+    const catalogTotalPesewas = Math.round((catalogSubtotal + shippingFee) * 100)
 
     // Allow ±1 pesewa for floating-point rounding only
-    if (Math.abs(verifiedTotalPesewas - clientTotalPesewas) > 1) {
+    if (Math.abs(verifiedTotalPesewas - catalogTotalPesewas) > 1) {
       console.warn('[orders/create] amount mismatch', {
         verified: verifiedTotalPesewas,
-        client:   clientTotalPesewas,
+        catalog:  catalogTotalPesewas,
         ref:      reference,
       })
       return NextResponse.json({ error: 'Order could not be created' }, { status: 402 })
     }
 
-    const subtotal = clientSubtotal
-    const total    = clientSubtotal + shippingFee
+    const subtotal = catalogSubtotal
+    const total    = catalogSubtotal + shippingFee
 
     // ── Create order in Sanity ─────────────────────────────────────────────
     const orderNumber = generateSecureOrderNumber()

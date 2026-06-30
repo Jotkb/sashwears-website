@@ -120,6 +120,10 @@ export function middleware(req: NextRequest) {
   }
 
   // ── Rate limiting for API routes ──────────────────────────────────────────
+  // Trusts x-forwarded-for as set by the platform's edge proxy (Vercel
+  // overwrites this header with the real client IP — it cannot be spoofed
+  // by the request itself). If self-hosting behind a different proxy,
+  // confirm it strips/overwrites this header before requests reach the app.
   if (isApiRoute && req.method === 'POST') {
     const config = RATE_LIMITS[pathname]
     if (config) {
